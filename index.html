@@ -3,133 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>我的天氣日記 Weather Diary</title>
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/180/sun.png">
+    <title>小工程師的天氣日記</title>
     <style>
-        :root { --blue: #0288d1; --light-blue: #e3f2fd; }
+        :root { --main-bg: #e3f2fd; --card-bg: #ffffff; --accent: #0288d1; }
+        
         body {
             font-family: "Microsoft JhengHei", sans-serif;
-            background-color: var(--light-blue);
-            margin: 0; padding: 15px;
+            background-color: var(--main-bg);
+            margin: 0; padding: 20px;
             display: flex; flex-direction: column; height: 100vh;
             box-sizing: border-box;
         }
 
-        /* 標題 */
-        .header { text-align: center; margin-bottom: 15px; }
-        h1 { color: var(--blue); font-size: clamp(24px, 5vw, 40px); margin: 0; }
+        .header { text-align: center; margin-bottom: 10px; }
+        h1 { color: var(--accent); font-size: 32px; margin: 0; text-shadow: 1px 1px white; }
 
-        .container {
-            display: flex; flex: 1; gap: 15px; overflow: hidden;
-        }
+        .container { display: flex; flex: 1; gap: 20px; overflow: hidden; }
 
-        /* 左邊：紀錄 */
+        /* 左側紀錄清單 */
         .history-panel {
-            flex: 1; background: white; border-radius: 25px;
-            padding: 15px; display: flex; flex-direction: column;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            flex: 1.2; background: var(--card-bg); border-radius: 30px;
+            padding: 20px; display: flex; flex-direction: column;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
         }
         #history-list {
-            list-style: none; padding: 0; font-size: 20px;
+            list-style: none; padding: 0; font-size: 22px;
             overflow-y: auto; flex: 1;
         }
-        .history-item { padding: 10px 0; border-bottom: 1px dashed #ddd; }
+        .history-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 0; border-bottom: 2px dashed #eee;
+            animation: fadeIn 0.3s ease;
+        }
+        .btn-delete {
+            background: #ff7675; color: white; border: none;
+            padding: 8px 12px; border-radius: 12px; cursor: pointer;
+            font-size: 18px; margin-left: 10px;
+        }
 
-        /* 中間：顯示 */
+        /* 中間顯示區 */
         .main-display {
-            flex: 1.5; background: white; border-radius: 40px;
-            border: 8px solid #4fc3f7; display: flex;
+            flex: 1.5; background: white; border-radius: 50px;
+            border: 10px solid #81d4fa; display: flex;
             flex-direction: column; justify-content: center; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        #big-icon { font-size: clamp(80px, 15vw, 150px); }
-        #big-zh { font-size: clamp(40px, 8vw, 60px); font-weight: bold; color: #01579b; }
-        #big-en { font-size: clamp(20px, 4vw, 30px); color: var(--blue); }
+        #big-icon { font-size: 160px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1)); }
+        #big-zh { font-size: 60px; font-weight: bold; color: #01579b; }
+        #big-en { font-size: 30px; color: var(--accent); }
 
-        /* 右邊：按鈕 */
-        .input-panel {
-            flex: 1; display: flex; flex-direction: column; gap: 10px;
+        /* 右側按鈕區 */
+        .input-panel { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+        .weather-btn {
+            font-size: 24px; padding: 20px; border: none;
+            border-radius: 20px; background: white; cursor: pointer;
+            box-shadow: 0 5px 0 #b3e5fc; transition: 0.1s;
+            text-align: left; padding-left: 30px;
         }
-        button {
-            font-size: 20px; padding: 15px; border: none;
-            border-radius: 15px; background: white; cursor: pointer;
-            box-shadow: 0 4px 0 #b3e5fc; transition: 0.1s;
+        .weather-btn:active { transform: translateY(4px); box-shadow: none; }
+        .btn-print { 
+            background: #a29bfe; color: white; box-shadow: 0 5px 0 #6c5ce7; 
+            font-weight: bold; font-size: 26px; margin-top: 10px; text-align: center; padding-left: 20px;
         }
-        button:active { transform: translateY(3px); box-shadow: none; }
-        .btn-print { background: #9575cd; color: white; box-shadow: 0 4px 0 #673ab7; font-weight: bold; }
 
-        /* 列印樣式 */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+
         @media print {
-            .input-panel, .header { display: none !important; }
+            .input-panel, .header, .btn-delete { display: none !important; }
             .container { display: block; }
             .main-display { display: none; }
-            .history-panel { width: 100%; box-shadow: none; }
+            .history-panel { width: 100%; box-shadow: none; border: none; }
+            #history-list { font-size: 28px; }
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>☀️ 天氣紀錄站 Weather Station</h1>
+        <h1>🎨 我的天天氣紀錄 My Weather Diary</h1>
     </div>
 
     <div class="container">
-        <div class="history-panel" id="print-content">
-            <h2 style="font-size: 22px; margin: 0 0 10px 0;">📅 我的紀錄 History</h2>
+        <div class="history-panel">
+            <h2 style="font-size: 26px; color: #555;">📅 紀錄 History</h2>
             <ul id="history-list"></ul>
         </div>
 
         <div class="main-display">
             <div id="big-icon">🌈</div>
-            <div id="big-zh">今天天氣</div>
-            <div id="big-en">Today's Weather</div>
+            <div id="big-zh">你好！</div>
+            <div id="big-en">Hello!</div>
         </div>
 
         <div class="input-panel">
-            <button onclick="add('☀️', '晴天', 'Sunny')">☀️ 晴天 Sunny</button>
-            <button onclick="add('☁️', '多雲', 'Cloudy')">☁️ 多雲 Cloudy</button>
-            <button onclick="add('🌧️', '下雨', 'Rainy')">🌧️ 下雨 Rainy</button>
-            <button onclick="add('💨', '有風', 'Windy')">💨 有風 Windy</button>
-            <button onclick="add('🌡️', '溫暖', 'Warm')">🌡️ 溫暖 Warm</button>
-            <button class="btn-print" onclick="smartPrint()">🖨️ 列印 Print</button>
+            <button class="weather-btn" onclick="add('☀️', '晴天', 'Sunny')">☀️ 晴天 Sunny</button>
+            <button class="weather-btn" onclick="onclick="add('☁️', '多雲', 'Cloudy')">☁️ 多雲 Cloudy</button>
+            <button class="weather-btn" onclick="add('🌧️', '下雨', 'Rainy')">🌧️ 下雨 Rainy</button>
+            <button class="weather-btn" onclick="add('💨', '有風', 'Windy')">💨 有風 Windy</button>
+            <button class="weather-btn" onclick="add('🌡️', '溫暖', 'Warm')">🌡️ 溫暖 Warm</button>
+            <button class="btn-print" onclick="window.print()">🖨️ 列印 Print</button>
         </div>
     </div>
 
     <script>
         function add(icon, zh, en) {
+            // 更新中間畫面
             document.getElementById('big-icon').innerText = icon;
             document.getElementById('big-zh').innerText = zh;
             document.getElementById('big-en').innerText = en;
-            const now = new Date();
-            const dateStr = (now.getMonth() + 1) + "/" + now.getDate();
-            const list = document.getElementById('history-list');
-            const entry = document.createElement('li');
-            entry.className = 'history-item';
-            entry.innerHTML = `<strong>${dateStr}</strong>: ${icon} ${zh} ${en}`;
-            list.insertBefore(entry, list.firstChild);
-        }
 
-        function smartPrint() {
-            // 解決嵌入框架無法列印的黑科技：
-            // 建立一個隱藏的新視窗，把內容丟進去印，然後關掉
-            const content = document.getElementById('print-content').innerHTML;
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html>
-                <head><title>Print Weather</title>
-                <style>
-                    body { font-family: sans-serif; padding: 20px; }
-                    .history-item { padding: 10px; border-bottom: 1px solid #ccc; font-size: 24px; }
-                    h2 { color: #0288d1; }
-                </style>
-                </head>
-                <body>${content}</body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.focus();
-            setTimeout(() => {
-                printWindow.print();
-                printWindow.close();
-            }, 500);
+            // 產生紀錄
+            const now = new Date();
+            const time = (now.getMonth() + 1) + "/" + now.getDate();
+            const list = document.getElementById('history-list');
+            
+            const li = document.createElement('li');
+            li.className = 'history-item';
+            li.innerHTML = `
+                <span><strong>${time}</strong>: ${icon} ${zh} ${en}</span>
+                <button class="btn-delete" onclick="this.parentElement.remove()">🗑️</button>
+            `;
+            list.insertBefore(li, list.firstChild);
         }
     </script>
 </body>
