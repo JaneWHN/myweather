@@ -16,8 +16,8 @@
             box-sizing: border-box;
         }
 
-        .header { text-align: center; margin-bottom: 10px; }
-        h1 { color: var(--accent); font-size: 32px; margin: 0; text-shadow: 1px 1px white; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        h1 { color: var(--accent); font-size: clamp(20px, 4vw, 32px); margin: 0; }
 
         .container { display: flex; flex: 1; gap: 20px; overflow: hidden; }
 
@@ -34,12 +34,10 @@
         .history-item {
             display: flex; justify-content: space-between; align-items: center;
             padding: 15px 0; border-bottom: 2px dashed #eee;
-            animation: fadeIn 0.3s ease;
         }
         .btn-delete {
             background: #ff7675; color: white; border: none;
-            padding: 8px 12px; border-radius: 12px; cursor: pointer;
-            font-size: 18px; margin-left: 10px;
+            padding: 8px 12px; border-radius: 12px; cursor: pointer; font-size: 18px;
         }
 
         /* 中間顯示區 */
@@ -49,25 +47,22 @@
             flex-direction: column; justify-content: center; align-items: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        #big-icon { font-size: 160px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1)); }
-        #big-zh { font-size: 60px; font-weight: bold; color: #01579b; }
-        #big-en { font-size: 30px; color: var(--accent); }
+        #big-icon { font-size: clamp(100px, 15vw, 160px); }
+        #big-zh { font-size: clamp(40px, 8vw, 60px); font-weight: bold; color: #01579b; }
+        #big-en { font-size: clamp(20px, 4vw, 30px); color: var(--accent); }
 
         /* 右側按鈕區 */
-        .input-panel { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+        .input-panel { flex: 1; display: flex; flex-direction: column; gap: 10px; }
         .weather-btn {
-            font-size: 24px; padding: 20px; border: none;
+            font-size: 22px; padding: 18px; border: none;
             border-radius: 20px; background: white; cursor: pointer;
-            box-shadow: 0 5px 0 #b3e5fc; transition: 0.1s;
-            text-align: left; padding-left: 30px;
+            box-shadow: 0 5px 0 #b3e5fc; transition: 0.1s; text-align: left; padding-left: 25px;
         }
         .weather-btn:active { transform: translateY(4px); box-shadow: none; }
-        .btn-print { 
-            background: #a29bfe; color: white; box-shadow: 0 5px 0 #6c5ce7; 
-            font-weight: bold; font-size: 26px; margin-top: 10px; text-align: center; padding-left: 20px;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        
+        .action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .btn-print { background: #a29bfe; color: white; box-shadow: 0 5px 0 #6c5ce7; border: none; border-radius: 15px; padding: 15px; font-size: 20px; cursor: pointer; }
+        .btn-new { background: #55efc4; color: #00b894; box-shadow: 0 5px 0 #00b894; border: none; border-radius: 15px; padding: 15px; font-size: 20px; cursor: pointer; }
 
         @media print {
             .input-panel, .header, .btn-delete { display: none !important; }
@@ -78,15 +73,16 @@
         }
     </style>
 </head>
-<body>
+<body onload="loadRecords()">
 
     <div class="header">
-        <h1>🎨 我的天天氣紀錄 My Weather Diary</h1>
+        <h1>🎨 天氣日記 Weather Diary</h1>
+        <button class="btn-new" onclick="newBook()">📖 新紀錄本 New Book</button>
     </div>
 
     <div class="container">
         <div class="history-panel">
-            <h2 style="font-size: 26px; color: #555;">📅 紀錄 History</h2>
+            <h2 style="font-size: 24px; color: #555; margin-top: 0;">📅 紀錄 History</h2>
             <ul id="history-list"></ul>
         </div>
 
@@ -97,34 +93,68 @@
         </div>
 
         <div class="input-panel">
-            <button class="weather-btn" onclick="add('☀️', '晴天', 'Sunny')">☀️ 晴天 Sunny</button>
-            <button class="weather-btn" onclick="onclick="add('☁️', '多雲', 'Cloudy')">☁️ 多雲 Cloudy</button>
-            <button class="weather-btn" onclick="add('🌧️', '下雨', 'Rainy')">🌧️ 下雨 Rainy</button>
-            <button class="weather-btn" onclick="add('💨', '有風', 'Windy')">💨 有風 Windy</button>
-            <button class="weather-btn" onclick="add('🌡️', '溫暖', 'Warm')">🌡️ 溫暖 Warm</button>
+            <button class="weather-btn" onclick="addRecord('☀️', '晴天', 'Sunny')">☀️ 晴天 Sunny</button>
+            <button class="weather-btn" onclick="addRecord('☁️', '多雲', 'Cloudy')">☁️ 多雲 Cloudy</button>
+            <button class="weather-btn" onclick="addRecord('🌧️', '下雨', 'Rainy')">🌧️ 下雨 Rainy</button>
+            <button class="weather-btn" onclick="addRecord('💨', '有風', 'Windy')">💨 有風 Windy</button>
+            <button class="weather-btn" onclick="addRecord('🌡️', '溫暖', 'Warm')">🌡️ 溫暖 Warm</button>
             <button class="btn-print" onclick="window.print()">🖨️ 列印 Print</button>
         </div>
     </div>
 
     <script>
-        function add(icon, zh, en) {
-            // 更新中間畫面
+        let weatherRecords = JSON.parse(localStorage.getItem('myWeatherRecords')) || [];
+
+        // 頁面載入時讀取紀錄
+        function loadRecords() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = '';
+            weatherRecords.forEach((rec, index) => {
+                const li = document.createElement('li');
+                li.className = 'history-item';
+                li.innerHTML = `
+                    <span><strong>${rec.date}</strong>: ${rec.icon} ${rec.zh} ${rec.en}</span>
+                    <button class="btn-delete" onclick="deleteRecord(${index})">🗑️</button>
+                `;
+                list.appendChild(li); // 讀取時按順序顯示
+            });
+        }
+
+        // 新增紀錄
+        function addRecord(icon, zh, en) {
             document.getElementById('big-icon').innerText = icon;
             document.getElementById('big-zh').innerText = zh;
             document.getElementById('big-en').innerText = en;
 
-            // 產生紀錄
             const now = new Date();
-            const time = (now.getMonth() + 1) + "/" + now.getDate();
-            const list = document.getElementById('history-list');
+            const dateStr = (now.getMonth() + 1) + "/" + now.getDate();
             
-            const li = document.createElement('li');
-            li.className = 'history-item';
-            li.innerHTML = `
-                <span><strong>${time}</strong>: ${icon} ${zh} ${en}</span>
-                <button class="btn-delete" onclick="this.parentElement.remove()">🗑️</button>
-            `;
-            list.insertBefore(li, list.firstChild);
+            // 加入陣列最前面
+            weatherRecords.unshift({ date: dateStr, icon, zh, en });
+            saveAndRefresh();
+        }
+
+        // 刪除單條紀錄
+        function deleteRecord(index) {
+            weatherRecords.splice(index, 1);
+            saveAndRefresh();
+        }
+
+        // 儲存到 LocalStorage 並更新畫面
+        function saveAndRefresh() {
+            localStorage.setItem('myWeatherRecords', JSON.stringify(weatherRecords));
+            loadRecords();
+        }
+
+        // 開新紀錄本
+        function newBook() {
+            if (confirm("要換一本新的紀錄本嗎？舊的紀錄會不見喔！\nStart a new book?")) {
+                weatherRecords = [];
+                saveAndRefresh();
+                document.getElementById('big-icon').innerText = '🌈';
+                document.getElementById('big-zh').innerText = '你好！';
+                document.getElementById('big-en').innerText = 'Hello!';
+            }
         }
     </script>
 </body>
